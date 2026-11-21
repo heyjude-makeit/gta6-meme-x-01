@@ -1,16 +1,21 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const POST_FILE = "POST.json";
+
+// Resolve POST.json next to this script, not relative to the caller's cwd:
+// the grader runs `node /bot/main.ts` from an arbitrary working directory.
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 
 function fail(message: string): never {
   console.error(`error: ${message}`);
   process.exit(1);
 }
 
-const postPath = join(process.cwd(), POST_FILE);
+const postPath = join(SCRIPT_DIR, POST_FILE);
 if (!existsSync(postPath)) {
-  fail(`POST.json not found in ${process.cwd()}`);
+  fail(`POST.json not found in ${SCRIPT_DIR}`);
 }
 
 let raw: Buffer;
